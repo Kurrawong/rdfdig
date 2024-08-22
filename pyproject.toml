@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "rdfdig"
 version = "0.1.0"
-description = "A command line tool for creating diagrams of RDF data."
+description = "A command line tool for creating diagrams from RDF data."
 authors = ["Lawon Lewis <lawson@kurrawong.ai>"]
 readme = "README.md"
 
@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.12"
 rdflib = "^7.0.0"
 jinja2 = "^3.1.4"
+toml = "^0.10.2"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.8.0"
@@ -19,3 +20,6 @@ ruff = "^0.6.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[project.scripts]
+rdfdig = "rdfdig.__main__:main"

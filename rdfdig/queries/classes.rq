@@ -1,0 +1,7 @@
+# TODO: pull out literal data types as well
+select distinct ?class ?predicate ?other_class
+where {
+    ?s a ?class .
+    ?s ?predicate ?o .
+    ?o a ?other_class .
+}
