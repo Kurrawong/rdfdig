@@ -13,8 +13,8 @@ class Diagram:
         self.edges: list[tuple[int, int, str]] = []
         self.options: dict = {}
         self._graph: Graph = Graph()
-        self._serialization: str = None
-        self._format: str = None
+        self._serialization: str = None  # in memory cache for the last serialization
+        self._format: str = None  # format of the last serialization
 
     def parse(
         self,
@@ -69,6 +69,7 @@ class Diagram:
                 self.edges.append(edge)
 
     def _parse_instance(self):
+        # TODO: implement instance level query
         raise NotImplementedError
 
     def serialize(self, format: str):

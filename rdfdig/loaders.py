@@ -17,4 +17,5 @@ def load_dir(path: Path) -> Graph:
 
 
 def load_sparql(endpoint: str, iri: str, graph: str, username: str, password: str):
+    # TODO: implement this
     raise NotImplementedError()

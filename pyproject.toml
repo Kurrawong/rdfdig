@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rdfdig"
-version = "0.1.0"
+version = "0.0.0"
 description = "A command line tool for creating diagrams from RDF data."
 authors = ["Lawon Lewis <lawson@kurrawong.ai>"]
 readme = "README.md"

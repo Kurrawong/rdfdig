@@ -9,13 +9,12 @@ pyproj_path = Path(__file__).parent.parent / "pyproject.toml"
 formats = {
     "visjs": dedent(
         """
-    A JSON object containing three arrays. One each for nodes, edges, and options.
+    A JSON object containing an array of nodes and an array of edges.
     To be used with the https://visjs.org/ visualisation library.
 
         {
             "nodes": [{"id": 1, "label": "node 1"}, ...],
-            "edges": [{"from": 1, "to": 2, "label": "uses"}, ...],
-            "options": {"key": "value", ...}
+            "edges": [{"from": 1, "to": 2, "label": "uses"}, ...]
         }
 
     """
