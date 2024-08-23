@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## v0.1.0 (2024-08-23)
+
+### Chore
+
+* chore: improve visjs rendering ([`779ff31`](https://github.com/Kurrawong/rdfdig/commit/779ff315b0de1598dae3be2e80ea8624b1956cd4))
+
+* chore: small fixes
+
+correct version number, add comments for Diagram internal properties,
+remove options from the serialized visjs object help message ([`7e90e1b`](https://github.com/Kurrawong/rdfdig/commit/7e90e1be7d98af64a44f63b985c2913dcaff5ada))
+
+* chore: mvp ([`711f058`](https://github.com/Kurrawong/rdfdig/commit/711f058363b4aa3835b5aa8cba84db3620a05e8d))
+
+### Feature
+
+* feat: instance level diagrams
+
+add support for the iri argument to generate instance level diagrams ([`4264c17`](https://github.com/Kurrawong/rdfdig/commit/4264c1730a73b169509ad5fc05213366c611317f))
+
 ## v0.0.0 (2024-08-22)
 
 ### Chore
