@@ -92,7 +92,7 @@ def main():
     args = parser.parse_args()
     diagram = Diagram()
     diagram.parse(args.source, args.iri, args.graph, args.username, args.password)
-    print(diagram.serialize(format=args.format))
+    print(diagram.serialize())
     if args.preview:
         diagram.render(format=args.format)
 
