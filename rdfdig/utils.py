@@ -2,6 +2,8 @@ from pathlib import Path
 from textwrap import dedent
 
 import toml
+from rdflib import URIRef
+from rdflib.namespace import NamespaceManager
 
 pyproj_path = Path(__file__).parent.parent / "pyproject.toml"
 
@@ -35,3 +37,9 @@ def get_description() -> str:
     """Extract the project description from pyproject.toml"""
     pyproj = toml.load(pyproj_path)
     return pyproj.get("tool", {}).get("poetry", {}).get("description", "")
+
+
+def expand_uri(iri: str, nm: NamespaceManager) -> URIRef:
+    if iri.startswith("http"):
+        return URIRef(iri)
+    return URIRef(nm.expand_curie(iri))

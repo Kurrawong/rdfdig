@@ -7,6 +7,7 @@ from loaders import load_dir, load_file, load_sparql
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.namespace import RDF, XSD
 from renderers import render_visjs
+from utils import expand_uri
 
 BNODE_KLASS = URIRef("bnode")
 
@@ -54,8 +55,9 @@ class Diagram:
             self._store = load_file(source)
         else:
             raise NotImplementedError
+
         if iri:
-            self._parse_instance()
+            self._parse_instance(expand_uri(iri, self._store.namespace_manager))
         else:
             self._parse_classes()
 
@@ -117,9 +119,37 @@ class Diagram:
                         Edge(from_id=subj_id, to_id=klass_id, label=pred_label)
                     )
 
-    def _parse_instance(self):
-        # TODO: implement instance level query
-        raise NotImplementedError
+    def _parse_instance(self, iri: URIRef):
+        iri_id = hash(iri)
+        iri_label = iri.n3(self._store.namespace_manager)
+        isblank = isinstance(iri, BNode)
+        self.nodes.add(Node(id=iri_id, label=iri_label, isblank=isblank))
+        # outgoing relations
+        pred_obs = self._store.predicate_objects(iri)
+        for pred, obj in pred_obs:
+            obj_id = hash(obj)
+            obj_label = obj.n3(self._store.namespace_manager)
+            isliteral = isinstance(obj, Literal)
+            isblank = isinstance(obj, BNode)
+            self.nodes.add(
+                Node(id=obj_id, label=obj_label, isliteral=isliteral, isblank=isblank)
+            )
+            pred_label = pred.n3(self._store.namespace_manager)
+            self.edges.add(Edge(from_id=iri_id, to_id=obj_id, label=pred_label))
+            if isblank:
+                self._parse_instance(iri=obj)
+        # incoming relations
+        subj_preds = self._store.subject_predicates(iri)
+        for subj, pred in subj_preds:
+            subj_id = hash(subj)
+            subj_label = subj.n3(self._store.namespace_manager)
+            isliteral = isinstance(subj, Literal)
+            isblank = isinstance(subj, BNode)
+            self.nodes.add(
+                Node(id=subj_id, label=subj_label, isliteral=isliteral, isblank=isblank)
+            )
+            pred_label = pred.n3(self._store.namespace_manager)
+            self.edges.add(Edge(from_id=subj_id, to_id=iri_id, label=pred_label))
 
     def serialize(self) -> str:
         self.serialization["nodes"] = [
