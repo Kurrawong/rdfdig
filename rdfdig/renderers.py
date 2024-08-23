@@ -7,6 +7,11 @@ from jinja2 import Template
 
 
 def render_visjs(serialization: dict, overrides: dict) -> None:
+    """render the serialization of a Diagram instance using visjs
+
+    The rendered template is written to a temp file and opened in
+    the default web browser.
+    """
     default_color = {
         "border": "#2B7CE9",
         "background": "#D2E5FF",

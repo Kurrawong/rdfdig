@@ -26,7 +26,28 @@ class Edge(NamedTuple):
 
 
 class Diagram:
-    def __init__(self, focus_node: URIRef = None):
+    """Instances of Diagram expose methods to parse, serialize and render RDF data to diagrams.
+
+    Broadly, two methods of parsing the data for display have been implemented.
+
+    Class diagram display (the default)
+
+        This method of parsing is useful to get a high level overview of the
+        rdf:type's of things in your data. It obscures the details of individual
+        instances of classes to make it easier to see what classes have been
+        defined and how they are connected to each other.
+
+    Instance diagram display (used if the iri parameter is provided to the parse method)
+
+        This is a more typical display of RDF data, focused around a given node,
+        this method will show all direct incoming and outgoing statements about
+        that resource. Blank nodes will be recursively evaluated such that indirect
+        blank node statements are not orphaned.
+
+    For more details about each method refer to their respective _parse_*() method.
+    """
+
+    def __init__(self):
         self.nodes: set[Node] = set()
         self.edges: set[Edge] = set()
         self.serialization: dict = {}
@@ -41,6 +62,14 @@ class Diagram:
         username: str | None,
         password: str | None,
     ):
+        """load data from the specified source and reduce it to nodes and edges.
+
+        :param source: can be path like or url like if url it must be a SPARQL endpoint
+        :param iri: generate an instance level diagram for the specified resource.
+        :param graph: URI like. restrict the diagram to the specifed graph.
+        :param username: username for HTTP basic authentication if required.
+        :param password: password. if left blank then the user will be prompted.
+        """
         if urlparse(source).netloc:
             self._store = load_sparql(
                 endpoint=source,
@@ -57,11 +86,35 @@ class Diagram:
             raise NotImplementedError
 
         if iri:
-            self._parse_instance(expand_uri(iri, self._store.namespace_manager))
+            self._parse_instances(expand_uri(iri, self._store.namespace_manager))
         else:
             self._parse_classes()
 
     def _parse_classes(self):
+        """parse class nodes and edges from the loaded RDF.
+
+        only cares about classes (i.e., declarations of rdf:type).
+        instances of the classes are not recorded.
+
+        statements of the form
+
+            <lawson> a schema:Person .
+            <kurrawongAI> a schema:Organisation .
+            <lawson> schema:name "Lawson" .
+            <lawson> schema:knows <kurrawongAI> .
+
+        would be reduced to
+
+            schema:Person -- schema:knows --> schema:Organisation
+
+        indicating that there are schema:Person rseources in the data that
+        are connected to schema:Organisation resources via the
+        schema:knows predicate.
+
+        The above information is very useful when constructing SPARQL
+        queries or just generally trying to inspect the form of an
+        RDF model.
+        """
         klasses = self._store.objects(None, RDF.type, unique=True)
         for klass in klasses:
             klass_id = hash(klass)
@@ -119,7 +172,34 @@ class Diagram:
                         Edge(from_id=subj_id, to_id=klass_id, label=pred_label)
                     )
 
-    def _parse_instance(self, iri: URIRef):
+    def _parse_instances(self, iri: URIRef):
+        """parse instance nodes and edges from the loaded RDF.
+
+        for a given resource idntifier (iri) parses the direct incoming
+        and outgoing statements. recursively evaluating blank nodes so that
+        statements about blank nodes are not orphaned.
+
+        for example, with <uluru> as the given iri
+        the following statements
+
+            <uluru> a schema:Place ;
+                schema:name "Uluru-Kata Tjuta National Park" ;
+                geo:hasGeometry [
+                    a geo:Geometry ;
+                    geo:asWKT "POINT(-25.20426 131.02110)"^^geo:wktLiteral .
+                ] .
+            <lawson> a schema:Person ;
+                schema:name "Lawson" .
+
+        would be reduced to a diagram showing
+
+            <uluru> -- a --> schema:Place
+            <uluru> -- schema:Name --> Uluru-Kata Tjuta National Park
+            <uluru> -- geo:hasGeometry --> _:1230409549305
+            _:1230409549305 -- a -- > geo:Geometry
+            _:1230409549305 -- geo:asWKT --> "POINT(-25.20426 131.02110)"^^geo:wktLiteral
+
+        """
         iri_id = hash(iri)
         iri_label = iri.n3(self._store.namespace_manager)
         isblank = isinstance(iri, BNode)
@@ -137,7 +217,7 @@ class Diagram:
             pred_label = pred.n3(self._store.namespace_manager)
             self.edges.add(Edge(from_id=iri_id, to_id=obj_id, label=pred_label))
             if isblank:
-                self._parse_instance(iri=obj)
+                self._parse_instances(iri=obj)
         # incoming relations
         subj_preds = self._store.subject_predicates(iri)
         for subj, pred in subj_preds:
@@ -152,6 +232,22 @@ class Diagram:
             self.edges.add(Edge(from_id=subj_id, to_id=iri_id, label=pred_label))
 
     def serialize(self) -> str:
+        """serialize the parsed nodes and edges to JSON
+
+        Intended to allow consumption of the diagram via API call.
+        Only the neccessary attributes for rendering a diagram are returned.
+        The consuming application is responsible for implementing the display logic.
+
+        :returns: A JSON string of the form
+
+            {
+                "nodes": [...],
+                "edges": [...]
+            }
+
+            where each node is a JSON serialization of a Node object and each edge is
+            a serialization of an Edge object.
+        """
         self.serialization["nodes"] = [
             {
                 "id": node.id,
@@ -168,6 +264,16 @@ class Diagram:
         return json.dumps(self.serialization)
 
     def render(self, format: str):
+        """render the parsed rdf as a diagram and display it.
+
+        Provides some pre baked logic and templates for rendering the diagram
+        in different formats. The rendered template is stored in a
+        temporary file that will automatically be cleaned up by the OS
+        after it has been closed.
+
+        :param format: The format to use when rendering. Available formats are
+            visjs, ...
+        """
         if not self.serialization:
             self.serialize()
         if format == "visjs":

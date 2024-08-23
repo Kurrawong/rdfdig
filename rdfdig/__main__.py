@@ -9,6 +9,7 @@ __description__ = get_description()
 
 
 def main():
+    """The command line entrypoint for RDFDig"""
     parser = argparse.ArgumentParser(
         prog="rdfdig",
         description=__description__,

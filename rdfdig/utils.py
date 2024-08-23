@@ -40,6 +40,14 @@ def get_description() -> str:
 
 
 def expand_uri(iri: str, nm: NamespaceManager) -> URIRef:
+    """Safely expand a prefixed IRI
+
+    uses the given namespace manager to resolve prefixes
+
+    :param iri: the iri to expand
+    :returns: a URIRef of the expanded iri
+    :raises: ValueError if the iri cannot be expanded
+    """
     if iri.startswith("http"):
         return URIRef(iri)
     return URIRef(nm.expand_curie(iri))
