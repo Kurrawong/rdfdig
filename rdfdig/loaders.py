@@ -20,8 +20,17 @@ def load_dir(path: Path) -> Graph:
     return graph
 
 
-def load_sparql(endpoint: str, iri: str, graph: str, username: str, password: str):
+def load_sparql(
+    endpoint: str,
+    iri: str,
+    graph: str,
+    username: str,
+    password: str,
+    limit: int = 1000,
+    offset: int = 0,
+):
     """load RDF from a remote SPARQL endpoint"""
+    # TODO: handle retrieval of blank node properties
     if username:
         if not password:
             password = getpass.getpass("password: ")
@@ -33,23 +42,30 @@ def load_sparql(endpoint: str, iri: str, graph: str, username: str, password: st
         "Content-Type": "application/sparql-query",
         "Accept": "application/ld+json",
     }
-    # TODO: finish implementation
-    query = """
-    construct {
-     ?s ?p ?o
-    }
-    """
-    if graph:
-        query += "from <%s>" % graph
-    query += """
-    where {
-        ?s ?p ?o
-    }
-    limit 5
-    """
-    params = {"query": query}
-    response = client.get(endpoint, headers=headers, params=params, auth=auth)
-    response.raise_for_status()
-    graph = Graph()
-    graph.parse(data=response.content, format="application/ld+json")
-    return graph
+    g = Graph()
+    while True:
+        graph_query_part = f"from <{graph}>" if graph else ""
+        iri_query_part = (
+            f"values (?s ?o) {{(<{iri}> UNDEF) (UNDEF <{iri}>)}}" if iri else ""
+        )
+        query = f"""
+        construct {{
+         ?s ?p ?o
+        }}
+        {graph_query_part}
+        where {{
+            {iri_query_part}
+            ?s ?p ?o
+        }}
+        limit {limit}
+        offset {offset}
+        """
+        response = client.get(endpoint, headers=headers, params={"query": query})
+        response.raise_for_status()
+        g_part = Graph()
+        g_part.parse(data=response.content, format="application/ld+json")
+        g += g_part
+        if len(g_part) < limit:
+            break
+        offset += limit
+    return g
