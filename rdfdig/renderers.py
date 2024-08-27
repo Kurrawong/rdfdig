@@ -1,3 +1,4 @@
+import html
 import json
 import webbrowser
 from pathlib import Path
@@ -107,6 +108,57 @@ def render_visjs(serialization: dict, overrides: dict) -> None:
             options=json.dumps(options),
         )
     )
+    tempfile.close()
+    webbrowser.open_new_tab(f"file:///{tempfile.name}")
+    return
+
+
+def render_mermaid(serialization: dict, overrides: dict) -> None:
+    options = {}
+    for key, value in overrides:
+        options[key] = value
+    mermaid = """
+    %%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
+    flowchart LR
+        classDef default fill:#efefef,stroke:#808080
+        classDef bnode fill:#ffffff,stroke:#808080
+        classDef literal fill:#ffffff,stroke:#808080
+    """
+
+    def id_str(id: int) -> str:
+        if id > 0:
+            return "A" + str(id)
+        return "B" + str(id)[1:]
+
+    for node in serialization["nodes"]:
+        node_id = id_str(node["id"])
+        label = html.escape(node["label"]).replace("&quot;", "#quot;")
+        if node["isblank"]:
+            mermaid += f"""
+            {node_id}(("bnode"))
+            class {node_id} bnode
+            """
+        elif node["isliteral"]:
+            mermaid += f"""
+            {node_id}["{label}"]
+            class {node_id} literal
+            """
+        else:
+            mermaid += f"""
+            {node_id}("{label}")
+            class {node_id} default
+            """
+    for edge in serialization["edges"]:
+        from_id = id_str(edge["from"])
+        to_id = id_str(edge["to"])
+        label = html.escape(edge["label"])
+        mermaid += f"""
+        {from_id} -->|"{label}"|{to_id}
+        """
+    template_path = Path(__file__).parent / "templates" / "mermaid.html"
+    template = Template(template_path.read_text())
+    tempfile = NamedTemporaryFile(mode="w", suffix=".html", delete=False)
+    tempfile.write(template.render(mermaid=mermaid))
     tempfile.close()
     webbrowser.open_new_tab(f"file:///{tempfile.name}")
     return

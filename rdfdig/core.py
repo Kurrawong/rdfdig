@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from loaders import load_dir, load_file, load_sparql
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.namespace import RDF, XSD
-from renderers import render_visjs
+from renderers import render_mermaid, render_visjs
 from utils import expand_uri
 
 BNODE_KLASS = URIRef("bnode")
@@ -278,5 +278,7 @@ class Diagram:
             self.serialize()
         if format == "visjs":
             render_visjs(self.serialization, self.overrides)
+        elif format == "mermaid":
+            render_mermaid(self.serialization, self.overrides)
         else:
             raise NotImplementedError

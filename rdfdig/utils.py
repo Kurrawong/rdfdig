@@ -1,5 +1,4 @@
 from pathlib import Path
-from textwrap import dedent
 
 import toml
 from rdflib import URIRef
@@ -7,24 +6,14 @@ from rdflib.namespace import NamespaceManager
 
 pyproj_path = Path(__file__).parent.parent / "pyproject.toml"
 
-# A list of supported output formats with a brief description of each
+# A list of supported renderer formats
 formats = {
-    "visjs": dedent(
-        """
-    A JSON object containing an array of nodes and an array of edges.
-    To be used with the https://visjs.org/ visualisation library.
-
-        {
-            "nodes": [{"id": 1, "label": "node 1"}, ...],
-            "edges": [{"from": 1, "to": 2, "label": "uses"}, ...]
-        }
-
-    """
-    ),
+    "visjs": "Interactive diagram using visjs.org",
+    "mermaid": "A mermaid diagram, using mermaid.js.org",
 }
-format_help_message = "The output format of the diagram.\n\n"
+format_help_message = "The output format of the diagram.\n"
 for format, description in formats.items():
-    format_help_message += f"{format}{description}"
+    format_help_message += f"\n{format}: {description}"
 
 
 def get_version() -> str:
