@@ -12,25 +12,60 @@ def render_visjs(serialization: dict, overrides: dict) -> None:
     The rendered template is written to a temp file and opened in
     the default web browser.
     """
-    default_color = {
-        "border": "#2B7CE9",
-        "background": "#D2E5FF",
-    }
-    bnode_color = {
-        "border": "#D2E5FF",
-        "background": "#606061",
-    }
     options = {
         "edges": {
+            "color": {
+                "border": "#808080",
+                "background": "#efefef",
+                "highlight": "#9DBDFF",
+            },
             "smooth": {"enabled": True, "type": "cubicBezier"},
             "arrows": {"to": {"enabled": True}},
         },
         "physics": {"enabled": True, "barnesHut": {"gravitationalConstant": -8000}},
+        "groups": {
+            "default": {
+                "color": {
+                    "border": "#808080",
+                    "background": "#efefef",
+                    "highlight": "#9DBDFF",
+                },
+                "shape": "box",
+                "margin": 16,
+                "widthConstraint": {"minimum": 100, "maximum": 100},
+                "heightConstraint": {"minimum": 50, "maximum": 50},
+            },
+            "literal": {
+                "color": {
+                    "border": "#808080",
+                    "background": "#ffffff",
+                    "highlight": "#9DBDFF",
+                },
+                "shape": "box",
+                "widthConstraint": {"minimum": 100},
+                "heightConstraint": {"minimum": 25, "maximum": 25},
+            },
+            "bnode": {
+                "color": {
+                    "border": "#808080",
+                    "background": "#ffffff",
+                    "highlight": "#9DBDFF",
+                },
+                "shape": "dot",
+                "widthConstraint": {"minimum": 100},
+            },
+        },
     }
     for key, value in overrides.items():
         options[key] = value
     nodes = []
     for node in serialization["nodes"]:
+        if node["isblank"]:
+            group = "bnode"
+        elif node["isliteral"]:
+            group = "literal"
+        else:
+            group = "default"
         nodes.append(
             {
                 "id": node["id"],
@@ -40,8 +75,7 @@ def render_visjs(serialization: dict, overrides: dict) -> None:
                     else (node["label"][:45] + "...")
                 ),
                 "title": node["label"],
-                "shape": "box" if node["isliteral"] else "dot",
-                "color": bnode_color if node["isblank"] else default_color,
+                "group": group,
             }
         )
     edges = []
@@ -60,7 +94,6 @@ def render_visjs(serialization: dict, overrides: dict) -> None:
                 "title": title,
                 "physics": {"enabled": False},
                 "width": width,
-                "color": default_color,
             }
         )
         pairs[pair] = (title, width)
