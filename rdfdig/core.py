@@ -79,9 +79,9 @@ class Diagram:
                 password=password,
             )
         elif Path(source).is_dir():
-            self._store = load_dir(source)
+            self._store = load_dir(Path(source))
         elif Path(source).is_file():
-            self._store = load_file(source)
+            self._store = load_file(Path(source))
         else:
             raise NotImplementedError
 
