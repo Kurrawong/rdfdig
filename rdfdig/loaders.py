@@ -1,8 +1,11 @@
 import getpass
+import logging
 from pathlib import Path
 
 import httpx
 from rdflib import Graph
+
+logger = logging.getLogger(__name__)
 
 
 def load_file(path: Path) -> Graph:
@@ -30,7 +33,6 @@ def load_sparql(
     offset: int = 0,
 ):
     """load RDF from a remote SPARQL endpoint"""
-    # TODO: handle retrieval of blank node properties
     if username:
         if not password:
             password = getpass.getpass("password: ")
@@ -38,28 +40,54 @@ def load_sparql(
         client = httpx.Client(auth=auth)
     else:
         client = httpx.Client()
-    headers = {
-        "Content-Type": "application/sparql-query",
-        "Accept": "application/ld+json",
-    }
     g = Graph()
+    if not iri:
+        # first check how many triples there are
+        headers = {
+            "Content-Type": "application/sparql-query",
+            "Accept": "application/json",
+        }
+        query = f"select (count(?s) as ?n) {f'from <{graph}>' if graph else ''} where {{?s ?p ?o}}"
+        response = client.get(endpoint, headers=headers, params={"query": query})
+        response.raise_for_status()
+        try:
+            n_triples = int(response.json()["results"]["bindings"][0]["n"]["value"])
+        except Exception as e:
+            logging.error(
+                f"could not count triples in remote endpoint. message: {e.args[0]}"
+            )
+            n_triples = 0
+        if n_triples > 1:
+            logger.warning(f"Warning, you are requesting {n_triples:,} triples.")
     while True:
-        graph_query_part = f"from <{graph}>" if graph else ""
-        iri_query_part = (
-            f"values (?s ?o) {{(<{iri}> UNDEF) (UNDEF <{iri}>)}}" if iri else ""
-        )
+        # fetch bnode properties to a depth of two
         query = f"""
         construct {{
-         ?s ?p ?o
+         ?s ?p ?o .
+         ?o ?p1 ?o1 .
+         ?o1 ?p2 ?o2 .
         }}
-        {graph_query_part}
+        {f"from <{graph}>" if graph else ""}
         where {{
-            {iri_query_part}
-            ?s ?p ?o
+            {f"values (?s ?o) {{(<{iri}> UNDEF) (UNDEF <{iri}>)}}" if iri else ""}
+            ?s ?p ?o .
+            optional {{
+                ?o ?p1 ?o1 .
+                filter (isblank(?o))
+                optional {{
+                    ?o1 ?p2 ?o2 .
+                    filter (isblank(?o1))
+                }}
+            }}
         }}
         limit {limit}
         offset {offset}
         """
+        logger.debug(query)
+        headers = {
+            "Content-Type": "application/sparql-query",
+            "Accept": "application/ld+json",
+        }
         response = client.get(endpoint, headers=headers, params={"query": query})
         response.raise_for_status()
         g_part = Graph()
