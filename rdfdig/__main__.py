@@ -1,8 +1,14 @@
 import argparse
+import logging
 from textwrap import dedent
 
 from core import Diagram
+from logs import setup_logging
 from utils import format_help_message, formats, get_description, get_version
+
+setup_logging()
+logger = logging.getLogger(__name__)
+root_logger = logging.getLogger()
 
 __version__ = get_version()
 __description__ = get_description()
@@ -61,6 +67,16 @@ def main():
         dest="preview",
         help="render the diagram in the browser after serializing it.",
     )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        dest="verbosity",
+        action="count",
+        default=0,
+    )
+    parser.add_argument(
+        "-q", "--quiet", dest="quiet", action="store_true", default=False
+    )
     format_group.add_argument(
         "-f",
         "--format",
@@ -91,6 +107,13 @@ def main():
         ),
     )
     args = parser.parse_args()
+    if args.quiet:
+        root_logger.setLevel(logging.CRITICAL)
+    else:
+        root_logger.setLevel(
+            max([10, (30 - (args.verbosity * 10))])
+        )  # logging.WARNING = 30, logging.DEBUG = 10. each -v decreases the log level by 10
+    logger.info(f"root logging level set at {logger.level}")
     diagram = Diagram()
     diagram.parse(args.source, args.iri, args.graph, args.username, args.password)
     print(diagram.serialize())
