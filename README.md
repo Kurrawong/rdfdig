@@ -20,10 +20,10 @@ extend RDFdig with custom renderes if you need something else.
 
 ## Screenshots
 
-|                                                                      |                                                                    |
-| -------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| ![class diagram](/docs/dcat_class_diagram.png)                        | ![simple instance diagram](/docs/simple_instance_level_diagram.png) |
-| ![complex instance diagram](/docs/complex_instance_level_diagram.png) |                                                                    |
+|                                                                       |                                                                     |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| ![class diagram](./docs/dcat_class_diagram.png)                        | ![simple instance diagram](./docs/simple_instance_level_diagram.png) |
+| ![complex instance diagram](./docs/complex_instance_level_diagram.png) | ![mermaid format](./docs/mermaid_diagram.png)                       |
 
 ## Features
 
