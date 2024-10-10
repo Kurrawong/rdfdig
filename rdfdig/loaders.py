@@ -15,11 +15,15 @@ def load_file(path: Path) -> Graph:
     return graph
 
 
-def load_dir(path: Path) -> Graph:
+def load_dir(path: Path, graph: Graph | None = None) -> Graph:
     """load RDF from files in path input format is automatically determined"""
-    graph = Graph()
-    for file in path.iterdir():
-        graph.parse(file)
+    if graph is None:
+        graph = Graph()
+    for subpath in path.iterdir():
+        if subpath.is_dir():
+            load_dir(subpath, graph)
+        else:
+            graph.parse(subpath)
     return graph
 
 
