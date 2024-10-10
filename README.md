@@ -29,9 +29,9 @@ extend RDFdig with custom renderes if you need something else.
 
 - No fuss, good looking, clean diagrams of your RDF data,
 - Interactive and static diagram rendering,
-- Load data from files, folders, and SPARQL endpoints in any format supported by [RDFLib],
-- Render using [vis.js] for awesome interactive diagrams,
-- Render with [mermaid] to create portable, documentation ready diagrams,
+- Load data from files, folders, and SPARQL endpoints in any format supported by RDFLib,
+- Render using vis.js for awesome interactive diagrams,
+- Render with mermaid to create portable, documentation ready diagrams,
 - Generate `JSON` nodes and edges to create a diagram with the tool of your choice.
 
 > [!IMPORTANT]
@@ -73,7 +73,7 @@ into [jq](https://jqlang.github.io/jq/) for display
 rdfdig data | jq
 ```
 
-Generate a mermaid diagram from the data held at the given remote SPARQL endpoint
+Generate a diagram from the data at the remote SPARQL endpoint
 
 ```bash
 rdfdig "https://example.org/sparql" --render
