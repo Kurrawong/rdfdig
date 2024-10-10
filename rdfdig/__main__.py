@@ -113,7 +113,7 @@ def main():
         root_logger.setLevel(
             max([10, (30 - (args.verbosity * 10))])
         )  # logging.WARNING = 30, logging.DEBUG = 10. each -v decreases the log level by 10
-    logger.info(f"root logging level set at {logger.level}")
+    logging.info(f"starting program with args:\n{args}")
     diagram = Diagram()
     diagram.parse(args.source, args.iri, args.graph, args.username, args.password)
     print(diagram.serialize())

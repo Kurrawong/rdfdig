@@ -61,7 +61,7 @@ def load_sparql(
                 f"could not count triples in remote endpoint. message: {e.args[0]}"
             )
             n_triples = 0
-        if n_triples > 1:
+        if n_triples > 100000:
             logger.warning(f"Warning, you are requesting {n_triples:,} triples.")
     while True:
         # fetch bnode properties to a depth of two
