@@ -1,0 +1,9 @@
+@prefix : <http://example.org/> .
+@prefix schema: <https://schema.org/> .
+
+:edmond a schema:Person ;
+	schema:name "edmond" ;
+	schema:affiliation :kurrawong .
+
+:kurrawong a schema:Organisation ;
+	schema:name "Kurrawong AI" .

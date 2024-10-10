@@ -3,11 +3,12 @@ from pathlib import Path
 from typing import NamedTuple
 from urllib.parse import urlparse
 
-from loaders import load_dir, load_file, load_sparql
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.namespace import RDF, XSD
-from renderers import render_mermaid, render_visjs
-from utils import expand_uri
+
+from rdfdig.loaders import load_dir, load_file, load_sparql
+from rdfdig.renderers import render_mermaid, render_visjs
+from rdfdig.utils import expand_uri
 
 BNODE_KLASS = URIRef("bnode")
 
@@ -56,11 +57,11 @@ class Diagram:
 
     def parse(
         self,
-        source: str,
-        iri: str | None,
-        graph: str | None,
-        username: str | None,
-        password: str | None,
+        source: str | Path,
+        iri: str | None = None,
+        graph: str | None = None,
+        username: str | None = None,
+        password: str | None = None,
     ):
         """load data from the specified source and reduce it to nodes and edges.
 
@@ -70,7 +71,7 @@ class Diagram:
         :param username: username for HTTP basic authentication if required.
         :param password: password. if left blank then the user will be prompted.
         """
-        if urlparse(source).netloc:
+        if not isinstance(source, Path) and urlparse(source).netloc:
             self._store = load_sparql(
                 endpoint=source,
                 iri=iri,

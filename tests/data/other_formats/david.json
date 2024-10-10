@@ -1,0 +1,29 @@
+[
+  {
+    "@id": "http://example.org/david",
+    "@type": [
+      "https://schema.org/Person"
+    ],
+    "https://schema.org/affiliation": [
+      {
+        "@id": "http://example.org/kurrawong"
+      }
+    ],
+    "https://schema.org/name": [
+      {
+        "@value": "david"
+      }
+    ]
+  },
+  {
+    "@id": "http://example.org/kurrawong",
+    "@type": [
+      "https://schema.org/Organisation"
+    ],
+    "https://schema.org/name": [
+      {
+        "@value": "Kurrawong AI"
+      }
+    ]
+  }
+]

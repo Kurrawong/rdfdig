@@ -1,0 +1,5 @@
+<http://example.org/howard> <https://schema.org/name> "howard" .
+<http://example.org/howard> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/Person> .
+<http://example.org/kurrawong> <https://schema.org/name> "Kurrawong AI" .
+<http://example.org/kurrawong> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/Organisation> .
+<http://example.org/howard> <https://schema.org/affiliation> <http://example.org/kurrawong> .

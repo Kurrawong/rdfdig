@@ -2,9 +2,9 @@ import argparse
 import logging
 from textwrap import dedent
 
-from core import Diagram
-from logs import setup_logging
-from utils import format_help_message, formats, get_description, get_version
+from rdfdig.core import Diagram
+from rdfdig.logs import setup_logging
+from rdfdig.utils import format_help_message, formats, get_description, get_version
 
 setup_logging()
 logger = logging.getLogger(__name__)
