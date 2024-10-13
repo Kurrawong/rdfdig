@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import toml
 from rdflib import URIRef
 from rdflib.namespace import NamespaceManager
 
@@ -14,18 +13,6 @@ formats = {
 format_help_message = "The output format of the diagram.\n"
 for format, description in formats.items():
     format_help_message += f"\n{format}: {description}"
-
-
-def get_version() -> str:
-    """Extract the version number from pyproject.toml"""
-    pyproj = toml.load(pyproj_path)
-    return pyproj.get("tool", {}).get("poetry", {}).get("version", "")
-
-
-def get_description() -> str:
-    """Extract the project description from pyproject.toml"""
-    pyproj = toml.load(pyproj_path)
-    return pyproj.get("tool", {}).get("poetry", {}).get("description", "")
 
 
 def expand_uri(iri: str, nm: NamespaceManager) -> URIRef:

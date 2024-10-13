@@ -2,23 +2,21 @@ import argparse
 import logging
 from textwrap import dedent
 
+from rdfdig import __version__
 from rdfdig.core import Diagram
 from rdfdig.logs import setup_logging
-from rdfdig.utils import format_help_message, formats, get_description, get_version
+from rdfdig.utils import format_help_message, formats
 
 setup_logging()
 logger = logging.getLogger(__name__)
 root_logger = logging.getLogger()
-
-__version__ = get_version()
-__description__ = get_description()
 
 
 def main():
     """The command line entrypoint for RDFDig"""
     parser = argparse.ArgumentParser(
         prog="rdfdig",
-        description=__description__,
+        description="A command line tool for creating diagrams from RDF data.",
         formatter_class=argparse.RawTextHelpFormatter,
     )
     format_group = parser.add_argument_group("OUTPUT FORMATS")
