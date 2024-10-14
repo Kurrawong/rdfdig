@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v0.1.1 (2024-10-14)
+
+### Fixes
+
+* fix: script declaration
+
+config section was incorrect ([`72d48bd`](https://github.com/Kurrawong/rdfdig/commit/72d48bda5a84638b861ad81182a62bebf2ae4c32))
+
+
 ## v0.1.0 (2024-10-14)
 
 ### Chores
