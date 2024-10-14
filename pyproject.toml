@@ -30,5 +30,5 @@ version_variables = ["rdfdig/__init__.py:__version__"]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[project.scripts]
+[tool.poetry.scripts]
 rdfdig = "rdfdig.__main__:main"
