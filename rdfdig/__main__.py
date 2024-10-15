@@ -71,9 +71,15 @@ def main():
         dest="verbosity",
         action="count",
         default=0,
+        help="increase logging verbosity. can be supplied multiple times.",
     )
     parser.add_argument(
-        "-q", "--quiet", dest="quiet", action="store_true", default=False
+        "-q",
+        "--quiet",
+        dest="quiet",
+        action="store_true",
+        default=False,
+        help="Turn off all logging.",
     )
     format_group.add_argument(
         "-f",
@@ -104,6 +110,42 @@ def main():
         """
         ),
     )
+    sparql_group.add_argument(
+        "-l",
+        "--limit",
+        action="store",
+        type=int,
+        default=1000,
+        dest="limit",
+        help="SPARQL limit clause",
+    )
+    sparql_group.add_argument(
+        "-o",
+        "--offset",
+        action="store",
+        type=int,
+        default=0,
+        dest="offset",
+        help="SPARQL offset",
+    )
+    sparql_group.add_argument(
+        "-c",
+        "--cutoff",
+        action="store",
+        type=int,
+        default=10000,
+        dest="cutoff",
+        help="SPARQL cutoff. Maximum triples to fetch",
+    )
+    sparql_group.add_argument(
+        "-t",
+        "--timeout",
+        action="store",
+        type=int,
+        default=5,
+        dest="timeout",
+        help="HTTP timeout duration (in seconds) for SPARQL queries",
+    )
     args = parser.parse_args()
     if args.quiet:
         root_logger.setLevel(logging.CRITICAL)
@@ -113,7 +155,17 @@ def main():
         )  # logging.WARNING = 30, logging.DEBUG = 10. each -v decreases the log level by 10
     logging.info(f"starting program with args:\n{args}")
     diagram = Diagram()
-    diagram.parse(args.source, args.iri, args.graph, args.username, args.password)
+    diagram.parse(
+        source=args.source,
+        iri=args.iri,
+        graph=args.graph,
+        username=args.username,
+        password=args.password,
+        limit=args.limit,
+        offset=args.offset,
+        cutoff=args.cutoff,
+        timeout=args.timeout,
+    )
     print(diagram.serialize())
     if args.preview:
         diagram.render(format=args.format)

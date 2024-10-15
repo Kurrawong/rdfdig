@@ -29,21 +29,23 @@ def load_dir(path: Path, graph: Graph | None = None) -> Graph:
 
 def load_sparql(
     endpoint: str,
-    iri: str,
-    graph: str,
-    username: str,
-    password: str,
+    iri: str | None,
+    graph: str | None,
+    username: str | None,
+    password: str | None,
     limit: int = 1000,
     offset: int = 0,
+    cutoff: int = 10000,
+    timeout: int = 5,
 ):
     """load RDF from a remote SPARQL endpoint"""
     if username:
         if not password:
             password = getpass.getpass("password: ")
         auth = httpx.BasicAuth(username=username, password=password)
-        client = httpx.Client(auth=auth)
+        client = httpx.Client(auth=auth, timeout=httpx.Timeout(timeout=timeout))
     else:
-        client = httpx.Client()
+        client = httpx.Client(timeout=httpx.Timeout(timeout=timeout))
     g = Graph()
     if not iri:
         # first check how many triples there are
@@ -63,8 +65,11 @@ def load_sparql(
                 f"could not count triples in remote endpoint. message: {e.args[0]}"
             )
             n_triples = 0
-        if n_triples > 100000:
-            logger.warning(f"Warning, you are requesting {n_triples:,} triples.")
+        if n_triples > cutoff:
+            logger.warning(
+                f"Warning remote dataset contains {n_triples:,} triples. Only the first {cutoff:,} will be fetched.\n"
+                "This behaviour can be overriden by setting the 'cutoff' parameter."
+            )
     while True:
         # fetch bnode properties to a depth of two
         query = f"""
@@ -109,4 +114,6 @@ def load_sparql(
         if len(g_part) < limit:
             break
         offset += limit
+        if offset > cutoff:
+            break
     return g

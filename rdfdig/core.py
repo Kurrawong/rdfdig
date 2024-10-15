@@ -62,6 +62,10 @@ class Diagram:
         graph: str | None = None,
         username: str | None = None,
         password: str | None = None,
+        limit: int = 1000,
+        offset: int = 0,
+        cutoff: int = 10000,
+        timeout: int = 5,
     ):
         """load data from the specified source and reduce it to nodes and edges.
 
@@ -70,6 +74,10 @@ class Diagram:
         :param graph: URI like. restrict the diagram to the specifed graph.
         :param username: username for HTTP basic authentication if required.
         :param password: password. if left blank then the user will be prompted.
+        :param limit: SPARQL limit.
+        :param offset: SPARQL offset.
+        :param cutoff: cutoff for SPARQL queries. Only retrieve this many triples.
+        :param timeout: HTTP timeout (in seconds) for SPARQL queries.
         """
         if not isinstance(source, Path) and urlparse(source).netloc:
             self._store = load_sparql(
@@ -78,6 +86,10 @@ class Diagram:
                 graph=graph,
                 username=username,
                 password=password,
+                limit=limit,
+                offset=offset,
+                cutoff=cutoff,
+                timeout=timeout,
             )
         elif Path(source).is_dir():
             self._store = load_dir(Path(source))
