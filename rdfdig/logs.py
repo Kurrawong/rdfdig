@@ -35,6 +35,7 @@ def setup_logging():
     wh.setFormatter(logging.Formatter(fmt="\033[93m%(message)s\033[0m"))
     eh = logging.StreamHandler(sys.stderr)
     eh.addFilter(error_filter)
+    eh.setFormatter(logging.Formatter(fmt="\033[31m%(message)s\033[0m"))
     logger.addHandler(sh)
     logger.addHandler(wh)
     logger.addHandler(eh)
