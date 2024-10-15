@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 def load_file(path: Path) -> Graph:
     """load RDF from path input format is automatically determined"""
     graph = Graph()
+    logger.info(f"parsing rdf from {path.name}")
     graph.parse(path)
     return graph
 
@@ -23,6 +24,7 @@ def load_dir(path: Path, graph: Graph | None = None) -> Graph:
         if subpath.is_dir():
             load_dir(subpath, graph)
         else:
+            logger.info(f"parsing rdf from {subpath.name}")
             graph.parse(subpath)
     return graph
 
