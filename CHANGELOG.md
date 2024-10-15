@@ -1,6 +1,27 @@
 # CHANGELOG
 
 
+## v0.2.0 (2024-10-15)
+
+### Chores
+
+* chore: make errors print in red ([`65dbe1f`](https://github.com/Kurrawong/rdfdig/commit/65dbe1fd651c0c728c20125b9a516764584af7b2))
+
+### Features
+
+* feat: add support for sparql settings
+
+allows setting the limit, offset, cutoff and timeout for sparql queries
+when loading from remote sparql endpoint. ([`0445e6b`](https://github.com/Kurrawong/rdfdig/commit/0445e6b558a95cd15a27c39d0335db7ff137571d))
+
+### Fixes
+
+* fix: default to POST and fallback to GET on 405
+
+to overcome errors from some services that only support one or the other
+method ([`3fa9c0b`](https://github.com/Kurrawong/rdfdig/commit/3fa9c0bf5ea551efbb32a537fa6fbb6d26a9fefc))
+
+
 ## v0.1.1 (2024-10-14)
 
 ### Fixes
