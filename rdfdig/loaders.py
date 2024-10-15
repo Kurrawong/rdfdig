@@ -52,7 +52,9 @@ def load_sparql(
             "Accept": "application/json",
         }
         query = f"select (count(?s) as ?n) {f'from <{graph}>' if graph else ''} where {{?s ?p ?o}}"
-        response = client.get(endpoint, headers=headers, params={"query": query})
+        response = client.post(endpoint, headers=headers, data=query)
+        if response.status_code == 405:
+            response = client.get(endpoint, headers=headers, params={"query": query})
         response.raise_for_status()
         try:
             n_triples = int(response.json()["results"]["bindings"][0]["n"]["value"])
@@ -92,10 +94,17 @@ def load_sparql(
             "Content-Type": "application/sparql-query",
             "Accept": "application/ld+json",
         }
-        response = client.get(endpoint, headers=headers, params={"query": query})
+        response = client.post(endpoint, headers=headers, data=query)
+        if response.status_code == 405:
+            response = client.get(endpoint, headers=headers, params={"query": query})
         response.raise_for_status()
         g_part = Graph()
-        g_part.parse(data=response.content, format="application/ld+json")
+        try:
+            g_part.parse(data=response.content, format="application/ld+json")
+        except Exception as e:
+            logger.error(
+                f"could not parse response from SPARQL endpoint.\nerror message: {e.args[0]}\nresponse content:\n{response.text}"
+            )
         g += g_part
         if len(g_part) < limit:
             break
