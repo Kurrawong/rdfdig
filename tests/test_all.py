@@ -35,6 +35,26 @@ def test_serialization():
     _ = json.loads(nodes_edges_str)
 
 
+def test_class_serialization():
+    """Test that all classes are retrieved from test data"""
+    file = Path(__file__).parent / "data" / "edmond.ttl"
+    diagram = Diagram()
+    diagram.parse(source=file)
+    nodes_edges_str = diagram.serialize()
+    assert "schema:Person" in nodes_edges_str
+    assert "schema:Organisation" in nodes_edges_str
+
+
+def test_instance_serialization():
+    """Test that all instances are retrieved from test data"""
+    file = Path(__file__).parent / "data" / "edmond.ttl"
+    diagram = Diagram()
+    diagram.parse(source=file, iri="http://example.org/kurrawong")
+    nodes_edges_str = diagram.serialize()
+    assert "Edmond" in nodes_edges_str
+    assert "Kurrawong AI" in nodes_edges_str
+
+
 def test_prefix_expansion():
     """Test that a prefix can be expanded."""
     file = Path(__file__).parent / "data" / "lawson.ttl"

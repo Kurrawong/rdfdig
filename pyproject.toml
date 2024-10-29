@@ -22,6 +22,9 @@ python-semantic-release = "^9.11.0"
 [tool.isort]
 profile = "black"
 
+[pytest]
+pythonpath = "rdfdig"
+
 [tool.semantic_release]
 version_toml = ["pyproject.toml:tool.poetry.version"]
 version_variables = ["rdfdig/__init__.py:__version__"]
