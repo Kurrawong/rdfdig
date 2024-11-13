@@ -1,6 +1,21 @@
 # CHANGELOG
 
 
+## v0.2.1 (2024-11-13)
+
+### Chores
+
+* chore: add more tests ([`4a3752e`](https://github.com/Kurrawong/rdfdig/commit/4a3752e40cfb276bbd57c168622e31298fc9c214))
+
+* chore: update readme ([`c89ef7f`](https://github.com/Kurrawong/rdfdig/commit/c89ef7fc9f63bc274f3e71409ab7dd7c29749edc))
+
+* chore: add more logging statements ([`8099f81`](https://github.com/Kurrawong/rdfdig/commit/8099f81e370d5d1fcbe2ed14ab4310b7254609e1))
+
+### Fixes
+
+* fix: relax python version requirements ([`87728f7`](https://github.com/Kurrawong/rdfdig/commit/87728f775568536b18b1518b08d79cb05cfbcbe5))
+
+
 ## v0.2.0 (2024-10-15)
 
 ### Chores
