@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.3.0 (2024-11-22)
+
+### Features
+
+* feat: allow for multiple input sources ([`de0e9a3`](https://github.com/Kurrawong/rdfdig/commit/de0e9a3a4910f6f70299217490c209024f36d4ad))
+
+### Unknown
+
+* Merge pull request #1 from Kurrawong/lawson/multi-source
+
+feat: allow for multiple input sources ([`fa6ccfe`](https://github.com/Kurrawong/rdfdig/commit/fa6ccfeaaf6bd52ea31562d71a1cb5a6e4f53456))
+
+
 ## v0.2.1 (2024-11-13)
 
 ### Chores
