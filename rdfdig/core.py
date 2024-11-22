@@ -57,7 +57,7 @@ class Diagram:
 
     def parse(
         self,
-        source: str | Path,
+        sources: list[str | Path],
         iri: str | None = None,
         graph: str | None = None,
         username: str | None = None,
@@ -79,24 +79,39 @@ class Diagram:
         :param cutoff: cutoff for SPARQL queries. Only retrieve this many triples.
         :param timeout: HTTP timeout (in seconds) for SPARQL queries.
         """
-        if not isinstance(source, Path) and urlparse(source).netloc:
-            self._store = load_sparql(
-                endpoint=source,
-                iri=iri,
-                graph=graph,
-                username=username,
-                password=password,
-                limit=limit,
-                offset=offset,
-                cutoff=cutoff,
-                timeout=timeout,
-            )
-        elif Path(source).is_dir():
-            self._store = load_dir(Path(source))
-        elif Path(source).is_file():
-            self._store = load_file(Path(source))
-        else:
-            raise NotImplementedError
+
+        self._store = Graph()
+        sparql_endpoints = 0
+        for source in sources:
+            if not isinstance(source, Path) and urlparse(source).netloc:
+                if sparql_endpoints > 0:
+                    raise ValueError(
+                        "Loading from multiple SPARQL endpoints is not supported"
+                    )
+                graph = load_sparql(
+                    endpoint=source,
+                    iri=iri,
+                    graph=graph,
+                    username=username,
+                    password=password,
+                    limit=limit,
+                    offset=offset,
+                    cutoff=cutoff,
+                    timeout=timeout,
+                )
+                sparql_endpoints += 1
+            elif Path(source).is_dir():
+                graph = load_dir(Path(source))
+            elif Path(source).is_file():
+                graph = load_file(Path(source))
+            else:
+                raise NotImplementedError
+
+            self._store += graph
+            [
+                self._store.namespace_manager.bind(prefix=prefix, namespace=namespace)
+                for prefix, namespace in graph.namespace_manager.namespaces()
+            ]
 
         if iri:
             self._parse_instances(expand_uri(iri, self._store.namespace_manager))
