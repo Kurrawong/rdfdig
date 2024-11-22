@@ -105,7 +105,7 @@ class Diagram:
             elif Path(source).is_file():
                 graph = load_file(Path(source))
             else:
-                raise NotImplementedError
+                raise FileNotFoundError("Could not find source data at: {source}")
 
             self._store += graph
             [
