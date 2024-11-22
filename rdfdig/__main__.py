@@ -23,10 +23,11 @@ def main():
     sparql_group = parser.add_argument_group("SPARQL OPTIONS")
     parser.add_argument("--version", action="version", version=__version__)
     parser.add_argument(
-        "source",
+        "sources",
         action="store",
         type=str,
-        help="The data source. Can be SPARQL endpoint, file, or directory.",
+        nargs="+",
+        help="One or more data sources. Allowed sources are files, folders, and sparql endpoint.",
     )
     parser.add_argument(
         "-i",
@@ -156,7 +157,7 @@ def main():
     logging.info(f"starting program with args:\n{args}")
     diagram = Diagram()
     diagram.parse(
-        source=args.source,
+        sources=args.sources,
         iri=args.iri,
         graph=args.graph,
         username=args.username,
