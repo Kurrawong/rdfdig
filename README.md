@@ -46,7 +46,7 @@ RDFdig is available as a github release asset.
 To install RDFdig using pip
 
 ```bash
-pip install https://github.com/Kurrawong/rdfdig/archive/refs/tags/v{version-number}.zip
+pipx install git+https://github.com/Kurrawong/rdfdig
 ```
 
 A PyPi package is planned and coming soon.
